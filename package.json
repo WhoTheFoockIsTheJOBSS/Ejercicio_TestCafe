@@ -1,0 +1,18 @@
+{
+
+  "scripts": {
+
+    "execute:tests": "testcafe edge Ejercicio/Tests/*.js --skip-js-errors"
+
+  },
+
+  "dependencies": {
+
+    "testcafe": "^2.1.0",
+
+    "xpath": "^0.0.32"
+
+  }
+
+}
+

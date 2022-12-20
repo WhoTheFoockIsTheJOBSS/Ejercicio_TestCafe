@@ -1,0 +1,10 @@
+{
+
+  "scripts": {
+    "execute:tests": "testcafe edge Tests/"
+  },
+
+  "dependencies": {
+    "testcafe": "^2.1.0"
+  }
+}
