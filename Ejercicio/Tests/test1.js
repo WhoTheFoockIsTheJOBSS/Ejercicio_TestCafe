@@ -1,65 +1,71 @@
 const { t, Selector, ClientFunction } = require("testcafe");
-import XPathSelector from 'lib/xpath-select';
+import addDevicePage from '../Pages/addDevicePage';
+import devicesPAge from '../Pages/devicesPAge';
+
+fixture.page('http://localhost:3001/')('Ejercicio_TestCafe');
 
 let response;
 let body;
 
-fixture('test 1');
-
-test.skip('Get Devices List', async t => {
-
-    response = await t.request({
-        url: 'http://localhost:3000/devices',
-        method: 'GET'
-    });
-
-    console.log( response.body);
-    await t.expect(response.status).eql(200);
-    await t.expect(response.statusText).eql('OK');
-});
-
-test.skip.page('http://localhost:3001/')('Verifi list in UI', async t => {
-
-    response = await t.request({
-        url: 'http://localhost:3000/devices',
-        method: 'GET'
-    }); 
-
-    body = response.body;
-        
-        body.forEach( async device => {                 
-        
-            const device_name = XPathSelector(`//span[normalize-space()=${device.system_name}]`);
-            console.log(device_name.innerText);
-            await t.expect(device_name.innerText).eql(device.system_name);
-
-            const device_type = XPathSelector(`//span[normalize-space()=${device.type}]`);
-            console.log(device_type.innerText);
-            await t.expect(device_name.innerText).eql(device.type);
-
-            const device_hdd = XPathSelector(`//span[normalize-space()=${device.hdd_capacity} GB]`);
-            console.log(device_hdd.innerText);
-            await t.expect(device_name.innerText).eql(device.hdd_capacity);
-                
-    }); 
-});
-
-test.page('http://localhost:3001/')('Button in UI', async t => {
-
-    response = await t.request({
-        url: 'http://localhost:3000/devices',
-        method: 'GET'
-    });
+test('test 1', async t => {
     
-    response.body.forEach( async device => {        
-        
-        const IDdevice = device.id;
+    //Make an API call to retrieve the list of devices
+    response = await t.request({
+        url: 'http://localhost:3000/devices',
+        method: 'GET'
+    });
 
-        const editBtn = Selector(`a[href="/devices/edit/${IDdevice}"]`);
-        const editBtnText = await editBtn.innerText;
-
-        console.log(`${device.id} + ${editBtnText}`);
-        t.expect(editBtnText).eql('EDIT');
+    //Use the list of devices to check the elements are visible in the DOM. Check the name, 
+    //type and capacity of each element of the list using the class names and make sure they are correctly displayed.
         
+    response.body.forEach( async device => {   
+        
+        let i;
+        for (i=1; i<10; i++);
+
+        const selectorName = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(1) span:nth-child(1)`); 
+        const selectType = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(1) span:nth-child(2)`);
+        const selectHdd = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(1) span:nth-child(3)`);
+        
+        console.log(selectorName.innerText);
+        await t.expect(selectorName.innerText).eql(device.system_name)
+        await t.expect(selectType.innerText).eql(device.type)
+        await t.expect(selectHdd.innerText).eql(device.hdd_capacity);  
+        
+        //Verify that all devices contain the edit and delete buttons.
+
+        const editBtn = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(2) a:nth-child(1)`);
+        const removeBtn = Selector(`div:nth-child(${i}) > div:nth-child(2) > button:nth-child(2)`);
+
+        await t.expect(editBtn.exists).ok()
+        await t.expect(removeBtn.exists).ok();
     }); 
+
+});
+
+test.skip('test 2', async t => {
+
+    //Verify that devices can be created properly using the UI.
+    devicesPAge.clickOnAddDevice();
+    
+    await t.wait(4000);
+
+    const name = 'NEW-DEVICE';
+    addDevicePage.setName(name);
+    
+    await t
+    .click(Selector('select#type'))
+    .click(Selector('option[value=MAC]'));
+
+    const hdd = '500';
+    addDevicePage.setHdd(hdd);
+    addDevicePage.clickOnSaveBtn();
+    
+    //Verify the new device is now visible. Check name, type and capacity are visible and correctly displayed to the user.
+    await t
+    .expect(Selector('div:nth-child(8) div:nth-child(1) span:nth-child(1)').visible).ok()
+    .expect(Selector('div:nth-child(8) div:nth-child(1) span:nth-child(2)').visible).ok()
+    .expect(Selector('div:nth-child(8) div:nth-child(1) span:nth-child(3)').visible).ok()
+    .wait(5000);
+    
 });
