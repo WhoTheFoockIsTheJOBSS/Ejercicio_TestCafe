@@ -33,10 +33,6 @@ test('test 1', async t => {
         const removeBtn = Selector('button.device-remove').nth(i);
         await t.expect(editBtn.visible).ok();
         await t.expect(removeBtn.visible).ok();
-
-        // const { buttonEdit, buttonRemove} = await devicesPAge.deviceOptionsButtons(list[i].id, list[i]);
-        // await t.expect(buttonEdit.visible).ok();
-        // await t.expect(buttonRemove.visible).ok();
     };
 });
 
