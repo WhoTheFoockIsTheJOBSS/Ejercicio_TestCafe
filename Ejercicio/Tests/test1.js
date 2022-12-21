@@ -16,31 +16,28 @@ test('test 1', async t => {
     });
 
     //Use the list of devices to check the elements are visible in the DOM. Check the name, 
-    //type and capacity of each element of the list using the class names and make sure they are correctly displayed.
-        
-    response.body.forEach( async device => {   
-        
-        let i;
-        for (i=1; i<10; i++);
+    //type and capacity of each element of the list using the class names and make sure they are correctly displayed
+    
+    let list = response.body;
 
-        const selectorName = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(1) span:nth-child(1)`); 
-        const selectType = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(1) span:nth-child(2)`);
-        const selectHdd = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(1) span:nth-child(3)`);
-        
-        console.log(selectorName.innerText);
-        await t.expect(selectorName.innerText).eql(device.system_name)
-        await t.expect(selectType.innerText).eql(device.type)
-        await t.expect(selectHdd.innerText).eql(device.hdd_capacity);  
-        
+    for(let i=0; i<list.length; i++){
+        const {system_nameSelector, system_typeSelector, system_capacitySelector} = 
+        await devicesPAge.findingElementText(list[i].system_name, list[i].type, list[i].hdd_capacity);
+        await t.expect(system_nameSelector.visible).ok();
+        await t.expect(system_typeSelector.visible).ok();
+        await t.expect(system_capacitySelector.visible).ok();
+
+
         //Verify that all devices contain the edit and delete buttons.
+        const editBtn = Selector('a.device-edit').nth(i);
+        const removeBtn = Selector('button.device-remove').nth(i);
+        await t.expect(editBtn.visible).ok();
+        await t.expect(removeBtn.visible).ok();
 
-        const editBtn = Selector(`div[class='list-devices'] div:nth-child(${i}) div:nth-child(2) a:nth-child(1)`);
-        const removeBtn = Selector(`div:nth-child(${i}) > div:nth-child(2) > button:nth-child(2)`);
-
-        await t.expect(editBtn.exists).ok()
-        await t.expect(removeBtn.exists).ok();
-    }); 
-
+        // const { buttonEdit, buttonRemove} = await devicesPAge.deviceOptionsButtons(list[i].id, list[i]);
+        // await t.expect(buttonEdit.visible).ok();
+        // await t.expect(buttonRemove.visible).ok();
+    };
 });
 
 test.skip('test 2', async t => {
