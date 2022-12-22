@@ -36,29 +36,42 @@ test('test 1', async t => {
     };
 });
 
-test.skip('test 2', async t => {
+test('test 2', async t => {
 
-    //Verify that devices can be created properly using the UI.
-    devicesPAge.clickOnAddDevice();
+    function randomData(array){
+        return array[Math.floor(Math.random()*array.length)]
+    }
     
-    await t.wait(4000);
+        //Verify that devices can be created properly using the UI.
+        devicesPAge.clickOnAddDevice();
 
-    const name = 'NEW-DEVICE';
-    addDevicePage.setName(name);
-    
-    await t
-    .click(Selector('select#type'))
-    .click(Selector('option[value=MAC]'));
+        const name = `DEVICE-${faker.name.firstName()}`;
+        addDevicePage.setName(name);
 
-    const hdd = '500';
-    addDevicePage.setHdd(hdd);
-    addDevicePage.clickOnSaveBtn();
-    
+        const arrayOptions = Selector('#type option');
+        await t
+        .click(Selector('#type'))
+        .click(Selector('#type option').nth(randomData([0,1,2])));
+
+        const randomHdd = ['128', '240', '500','1000'];
+        addDevicePage.setHdd(randomData(randomHdd));
+
+        addDevicePage.clickOnSaveBtn();
+
+        console.log(name, await arrayOptions.count);
+
     //Verify the new device is now visible. Check name, type and capacity are visible and correctly displayed to the user.
-    await t
-    .expect(Selector('div:nth-child(8) div:nth-child(1) span:nth-child(1)').visible).ok()
-    .expect(Selector('div:nth-child(8) div:nth-child(1) span:nth-child(2)').visible).ok()
-    .expect(Selector('div:nth-child(8) div:nth-child(1) span:nth-child(3)').visible).ok()
-    .wait(5000);
-    
+    response = await t.request({
+        url: 'http://localhost:3000/devices',
+        method: 'GET'
+    });
+
+    let list = response.body;
+    for(let i=0; i<list.length; i++){
+        const {system_nameSelector, system_typeSelector, system_capacitySelector} = 
+        await devicesPAge.findingElementText(list[i].system_name, list[i].type, list[i].hdd_capacity);
+        await t.expect(system_nameSelector.visible).ok();
+        await t.expect(system_typeSelector.visible).ok();
+        await t.expect(system_capacitySelector.visible).ok();
+    };
 });
