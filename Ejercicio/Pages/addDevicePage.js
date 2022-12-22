@@ -4,7 +4,7 @@ import { Selector, t } from "testcafe";
 
     constructor(){
         this.systemNameInput = Selector('input#system_name');
-        this.typeSelect = Selector('select#type');
+        this.typeSelect = Selector('#type option');
         this.hddCapacityInput = Selector('input#hdd_capacity')
         this.saveBtn = Selector('button.submitButton');
     }
@@ -13,10 +13,10 @@ import { Selector, t } from "testcafe";
         await t.typeText(this.systemNameInput, systemName);
     };
 
-    // async setType(type){
-    //     await t.typeText(this.typeSelect);
-    //     await t.click(`option[value="${type}"]`);
-    // };
+    async setType(type){
+        await t.click(this.typeSelect);
+        await t.click(`option[value="${type}"]`);
+    };
 
     async setHdd(capacity){
         await t.typeText(this.hddCapacityInput, capacity);
