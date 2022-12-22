@@ -32,7 +32,7 @@ import { Selector, t } from "testcafe";
 
     async deviceOptionsButtons(id, index){
         const buttonEdit = this.edit_button().withText(id);
-        const buttonRemove = this.remove_button(index);
+        const buttonRemove = this.remove_button().withText(index);
         return(buttonEdit, buttonRemove)
     };
 
