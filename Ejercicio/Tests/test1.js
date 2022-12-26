@@ -54,8 +54,6 @@ test('test 2', async t => {
 
     addDevicePage.clickOnSaveBtn();
 
-    console.log(`New Device: ${name}`);
-
     //Verify the new device is now visible. Check name, type and capacity are visible and correctly displayed to the user.
     response = await t.request({
         url: userVariables.urlDevicesList,
@@ -100,10 +98,6 @@ test('test 3', async t =>{
         method: 'GET'
     });
 
-    const currentName = await devicesPAge.device_name().nth(0).innerText;
-
-    console.log(currentName, getDevice.body.system_name, userVariables.urlDevicesList);
-
     //Reload the page and verify the modified device has the new name.
     await t.eval(() => location.reload(true));
 });
@@ -115,9 +109,7 @@ test('test 4', async t => {
         method: 'GET'
     });
     
-    let responseReverse = response.body.reverse();
-    console.log(`DEVICE DELETED: `);
-    console.log(responseReverse[0]);
+    let responseReverse = response.body.reverse(); 
 
     //Make an API call that deletes the last element of the list.
     await t.request({
