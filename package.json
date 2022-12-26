@@ -2,7 +2,9 @@
 
   "scripts": {
 
-    "execute:tests": "testcafe edge Ejercicio/Tests/*.js --skip-js-errors"
+    "execute:tests": "testcafe edge Ejercicio/Tests/test1.js --skip-js-errors",
+
+    "execute:file": "testcafe"
 
   },
 
@@ -10,7 +12,15 @@
 
     "testcafe": "^2.1.0",
 
+    "testcafe-reporter-html": "^1.4.6",
+
     "xpath": "^0.0.32"
+
+  },
+
+  "devDependencies": {
+
+    "@faker-js/faker": "^7.6.0"
 
   }
 
