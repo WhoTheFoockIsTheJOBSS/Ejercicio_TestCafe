@@ -1,0 +1,14 @@
+{
+    "browsers": "edge",
+    "src": "Ejercicio/Tests/test1.js",
+    "baseUrl": "http://localhost:3001/",
+    "skipJsErrors": true,
+    "userVariables": {
+        "urlDevicesList": "http://localhost:3000/devices",
+        "urlDeviceID": "http://localhost:3000/devices/"
+    },
+    "reporter": {
+        "name": "html",
+        "output": "Reports/reportTest1.html"
+    }
+}
