@@ -1,9 +1,10 @@
-const { t, Selector, ClientFunction } = require("testcafe");
+const { t, Selector, ClientFunction, userVariables } = require("testcafe");
 import addDevicePage from '../Pages/addDevicePage';
 import devicesPAge from '../Pages/devicesPAge';
+import devices from '../Pages/devices';
 import { faker } from '@faker-js/faker';
 
-fixture.page('http://localhost:3001/')('Ejercicio_TestCafe');
+fixture('Ejercicio_TestCafe');
 
 let response;
 
@@ -11,7 +12,7 @@ test('test 1', async t => {
     
     //Make an API call to retrieve the list of devices
     response = await t.request({
-        url: 'http://localhost:3000/devices',
+        url: userVariables.urlDevicesList,
         method: 'GET'
     });
 
@@ -46,9 +47,7 @@ test('test 2', async t => {
     const name = `DEVICE-${faker.name.firstName()}`;
     addDevicePage.setName(name);
 
-    await t
-    .click(Selector('#type'))
-    .click(Selector('#type option').nth(randomData([0,1,2])));
+    addDevicePage.setType();
 
     const randomHdd = ['128', '240', '500','1000'];
     addDevicePage.setHdd(randomData(randomHdd));
@@ -59,7 +58,7 @@ test('test 2', async t => {
 
     //Verify the new device is now visible. Check name, type and capacity are visible and correctly displayed to the user.
     response = await t.request({
-        url: 'http://localhost:3000/devices',
+        url: userVariables.urlDevicesList,
         method: 'GET'
     });
 
@@ -76,40 +75,43 @@ test('test 2', async t => {
 test('test 3', async t =>{
 
     response = await t.request({
-        url: 'http://localhost:3000/devices',
+        url: userVariables.urlDevicesList,
         method: 'GET'
     });
     
     //Make an API call that renames the first device of the list to “Rename Device”.
+    let name = (await devices.deviceData()).system_name;
+    let type = (await devices.deviceData()).type;
+    let hdd = (await devices.deviceData()).hdd_capacity;
+
     await t.request({
-        url: `http://localhost:3000/devices/${response.body[0].id}`,
+        url: `${userVariables.urlDeviceID}${response.body[0].id}`,
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: {
-            "system_name": `DEVICE-${faker.name.firstName()}`, //"DESKTOP-SMART"
-            "type": "WINDOWS_WORKSTATION",
-            "hdd_capacity": "10"
+            "system_name": name, //"DESKTOP-SMART"
+            "type": type,
+            "hdd_capacity": hdd
           }
     });
 
     let getDevice = await t.request({
-        url: `http://localhost:3000/devices/${response.body[0].id}`,
+        url: `${userVariables.urlDeviceID}${response.body[0].id}`,
         method: 'GET'
     });
 
     const currentName = await devicesPAge.device_name().nth(0).innerText;
 
-    console.log(currentName, getDevice.body.system_name);
+    console.log(currentName, getDevice.body.system_name, userVariables.urlDevicesList);
 
     //Reload the page and verify the modified device has the new name.
-    await t
-    .eval(() => location.reload(true));
+    await t.eval(() => location.reload(true));
 });
 
 test('test 4', async t => {
 
     response = await t.request({
-        url: 'http://localhost:3000/devices',
+        url: userVariables.urlDevicesList,
         method: 'GET'
     });
     
@@ -119,7 +121,7 @@ test('test 4', async t => {
 
     //Make an API call that deletes the last element of the list.
     await t.request({
-        url: `http://localhost:3000/devices/${responseReverse[0].id}`,
+        url: `${userVariables.urlDeviceID}${response.body[0].id}`,
         method: 'DELETE'
     });
 
