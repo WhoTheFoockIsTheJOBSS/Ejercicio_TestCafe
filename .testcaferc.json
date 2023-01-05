@@ -1,5 +1,5 @@
 {
-    "browsers": "remote",
+    "browsers": "edge:headless",
     "src": "Ejercicio/Tests/test1.js",
     "baseUrl": "http://localhost:3001/",
     "skipJsErrors": true,
